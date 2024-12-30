@@ -89,6 +89,10 @@ int con_clearScr()
 
         CHAR_INFO *lpBuffer = (CHAR_INFO *)calloc(szBuf.X * szBuf.Y, sizeof(CHAR_INFO));
 
+        if (lpBuffer == NULL) {
+            exit(1);
+        }
+
         HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
         nResult = WriteConsoleOutput(hStdOut, lpBuffer, szBuf, BufferCoord, &srWriteRegion);
         free(lpBuffer);
@@ -107,7 +111,8 @@ int con_outTxt(const char * format , ...)
     va_start(arglist, format);
 
     assert(format);
-    len = _vsnprintf(buffer, sizeof(buffer)-1, format, arglist);
+    len = _vsnprintf_s(buffer, sizeof(buffer), _TRUNCATE, format, arglist);
+
     assert(len >= 0);
 
     return _cputs(buffer) == 0 ? len : -1;
